@@ -1,3 +1,13 @@
+import type { LoaderFunction } from "@remix-run/node";
+import { json } from "@remix-run/node";
+import { verifyCurrentUser } from "~/utils/auth.server";
+
+export const loader: LoaderFunction = async ({ request }) => {
+  const user = await verifyCurrentUser(request);
+  const data = { user };
+  return json(data);
+};
+
 export default function Index() {
   return (
     <div style={{ fontFamily: "system-ui, sans-serif", lineHeight: "1.4" }}>
