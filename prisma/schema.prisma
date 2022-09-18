@@ -1,0 +1,77 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Ability {
+  id               String             @id @default(uuid())
+  createdAt        DateTime           @default(now())
+  updatedAt        DateTime           @updatedAt
+  name             String             @unique
+  domain           Domain
+  action           Action
+  abilitiesOnRoles AbilitiesOnRoles[]
+  roles            Role[]
+}
+
+model Role {
+  id               String             @id @default(uuid())
+  createdAt        DateTime           @default(now())
+  updatedAt        DateTime           @updatedAt
+  organizationCode String
+  name             String
+  abilitiesOnRoles AbilitiesOnRoles[]
+  abilities        Ability[]
+  users            User[]
+
+  @@unique([organizationCode, name])
+}
+
+model AbilitiesOnRoles {
+  roleId     String
+  abilityId  String
+  assignedAt DateTime @default(now())
+  ability    Ability  @relation(fields: [abilityId], references: [id])
+  role       Role     @relation(fields: [roleId], references: [id])
+
+  @@id([roleId, abilityId])
+}
+
+model Organization {
+  id               String   @id @default(uuid())
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+  organizationCode String   @unique
+  name             String
+  users            User[]
+}
+
+model User {
+  id                  String         @id @default(uuid())
+  createdAt           DateTime       @default(now())
+  updatedAt           DateTime       @updatedAt
+  name                String?
+  email               String         @unique
+  hashedPassword      String
+  salt                String
+  resetToken          String?
+  resetTokenExpiresAt DateTime?
+  organizations       Organization[]
+  roles               Role[]
+}
+
+enum Action {
+  query
+  mutate
+}
+
+enum Domain {
+  settings
+}
