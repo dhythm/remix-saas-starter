@@ -1,42 +1,25 @@
 import type { LoaderFunction } from "@remix-run/node";
 import { json } from "@remix-run/node";
+import { SidebarWithHeader } from "~/components";
 import { verifyCurrentUser } from "~/utils/auth.server";
+import { useCurrentUser } from "~/utils/hooks";
 
 export const loader: LoaderFunction = async ({ request }) => {
-  const user = await verifyCurrentUser(request);
-  const data = { user };
+  const currentUser = await verifyCurrentUser(request);
+  const data = { currentUser };
   return json(data);
 };
 
 export default function Index() {
+  const currentUser = useCurrentUser();
   return (
-    <div style={{ fontFamily: "system-ui, sans-serif", lineHeight: "1.4" }}>
-      <h1>Welcome to Remix</h1>
-      <ul>
-        <li>
-          <a
-            target="_blank"
-            href="https://remix.run/tutorials/blog"
-            rel="noreferrer"
-          >
-            15m Quickstart Blog Tutorial
-          </a>
-        </li>
-        <li>
-          <a
-            target="_blank"
-            href="https://remix.run/tutorials/jokes"
-            rel="noreferrer"
-          >
-            Deep Dive Jokes App Tutorial
-          </a>
-        </li>
-        <li>
-          <a target="_blank" href="https://remix.run/docs" rel="noreferrer">
-            Remix Docs
-          </a>
-        </li>
-      </ul>
-    </div>
+    <SidebarWithHeader
+      name={currentUser.name ?? ""}
+      roleName={currentUser.role.name}
+    >
+      <div style={{ fontFamily: "system-ui, sans-serif", lineHeight: "1.4" }}>
+        <h1>Welcome to remix-saas-starter</h1>
+      </div>
+    </SidebarWithHeader>
   );
 }

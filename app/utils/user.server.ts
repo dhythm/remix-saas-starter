@@ -17,7 +17,11 @@ export async function getCurrentUser(
       organizationCode: true,
       name: true,
       email: true,
-      role: true,
+      role: {
+        select: {
+          name: true,
+        },
+      },
     },
   });
 
