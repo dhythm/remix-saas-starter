@@ -54,17 +54,18 @@ model Organization {
 }
 
 model User {
-  id                  String         @id @default(uuid())
-  createdAt           DateTime       @default(now())
-  updatedAt           DateTime       @updatedAt
-  name                String?
-  email               String         @unique
-  hashedPassword      String
-  salt                String
-  resetToken          String?
-  resetTokenExpiresAt DateTime?
-  organizations       Organization[]
-  roles               Role[]
+  id               String       @id @default(uuid())
+  createdAt        DateTime     @default(now())
+  updatedAt        DateTime     @updatedAt
+  name             String?
+  email            String
+  passwordHash     String
+  organizationCode String
+  organization     Organization @relation(fields: [organizationCode], references: [organizationCode])
+  roleId           String
+  role             Role         @relation(fields: [roleId], references: [id])
+
+  @@unique([organizationCode, email])
 }
 
 enum Action {
